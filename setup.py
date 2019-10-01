@@ -8,6 +8,6 @@ setup(name="keras_segmentation",
       author_email='divamgupta@gmail.com',
       platforms=["any"],  # or more specific, e.g. "win32", "cygwin", "osx"
       license="MIT",
-      url="https://github.com/divamgupta/image-segmentation-keras",
+      url="https://github.com/waeiski/image-segmentation-keras",
       packages=find_packages(),
 )
