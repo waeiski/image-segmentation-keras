@@ -104,21 +104,32 @@ def predict_multiple( model=None , inps=None , inp_dir=None, out_dir=None , chec
 	return all_prs
 
 
-
-
-def evaluate( model=None , inp_inmges=None , annotations=None , checkpoints_path=None ):
-	
-	assert False , "not implemented "
-
+def evaluate( model=None , inp_images=None , annotations=None , checkpoints_path=None ):
+ 
 	ious = []
+	output_width = model.output_width
+	output_height  = model.output_height
+	input_width = model.input_width
+	input_height = model.input_height
+	n_classes = model.n_classes
+
+	count = 0
 	for inp , ann   in tqdm( zip( inp_images , annotations )):
-		pr = predict(model , inp )
+		x = get_image_arr( inp , input_width  , input_height , odering=IMAGE_ORDERING )
+		pr = model.predict( np.array([x]) )[0]
+		pr = pr.argmax(-1)
+
 		gt = get_segmentation_arr( ann , model.n_classes ,  model.output_width , model.output_height  )
 		gt = gt.argmax(-1)
+		
 		iou = metrics.get_iou( gt , pr , model.n_classes )
+		# iou = metrics.get_iou( gt , gt , model.n_classes )
 		ious.append( iou )
+
+		# print(iou)
+		# count += 1
+		# if count > 20:
+		# 	break
 	ious = np.array( ious )
-	print("Class wise IoU "  ,  np.mean(ious , axis=0 ))
-	print("Total  IoU "  ,  np.mean(ious ))
-
-
+	print("Class wise IoU "  ,  np.nanmean(ious , axis=0 ))
+	print("Total  IoU "  ,  np.nanmean(ious))
